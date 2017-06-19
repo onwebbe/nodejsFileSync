@@ -1,7 +1,7 @@
 var config = require("config");
 var fs = require('fs-extra');
 function SyncFile(configParam){
-	this.localEnabled = config.get("remoteOverwriteEnabled");
+	this.localEnabled = config.get("localOverwriteEnabled");
 }
 SyncFile.prototype.start = function(){
 

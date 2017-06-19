@@ -21,7 +21,7 @@ SyncClient.prototype.connect = function(ip, port){
 			if(fileContent && fileContent.type=="Buffer"){
 				fileContent = new Buffer(fileContent.data);
 			}
-			fs.outputFileSync("/MyProjects/test.js", fileContent);
+			fs.outputFileSync(jsonData.target, fileContent);
 		}else{
 
 		}

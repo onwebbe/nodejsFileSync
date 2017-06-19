@@ -1,6 +1,7 @@
 var config = require('config');
 var MonitorItem = require("./MonitorItem");
 var SyncServer = require("./SyncServer");
+var SyncFile = require("./SyncFile");
 function CodeSync() {
 	this.monitorDirs = config.get("monitorDirs");
 	this.monitorItems = new Array();
@@ -9,7 +10,12 @@ function CodeSync() {
 	if(ip == null || ip == ""){
 		ip = "127.0.0.1";
 	}
-	this.syncServer = new SyncServer(ip, port);
+
+	this.syncFile = new SyncFile({});
+	this.syncServer = new SyncServer({
+		"ip": ip,
+		"port": port
+	});
 }
 CodeSync.prototype.start = function(){
 	var dirs = this.monitorDirs;
@@ -17,7 +23,7 @@ CodeSync.prototype.start = function(){
 	this.syncServer.start();
 	for(var i=0;i<dirs.length;i++){
 		var dir = dirs[i];
-		var item = new MonitorItem(dir, remoteROOT, this.syncServer);
+		var item = new MonitorItem(dir, remoteROOT, this.syncFile, this.syncServer);
 		this.monitorItems.push(item);
 		item.startMonitor();
 	}

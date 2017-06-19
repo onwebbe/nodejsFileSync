@@ -3,7 +3,7 @@
 	"remote": {
 		"ip": "",
 		"port": 8888,
-		"rootPath": ""
+		"rootPath": "/MyProjects/nodejsPrj/nodeJsFileSyncTest/"
 	},
 	"remoteOverwriteEnabled": true,
 	"localOverwriteEnabled": true,
@@ -19,6 +19,6 @@
 			{"source":".xhtml","target":".xhtml"}
 		],
 		"targetBaseFolder": "/data/sfsf/workspace/trunk/tomcat-sfs/webapps/ROOT/",
-		"remoteTargetFolder": ""
+		"remoteTargetFolder": "server/"
 	}]
 }
