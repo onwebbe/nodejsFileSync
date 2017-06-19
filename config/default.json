@@ -1,0 +1,24 @@
+{
+	"type": "",
+	"remote": {
+		"ip": "",
+		"port": 8888,
+		"rootPath": ""
+	},
+	"remoteOverwriteEnabled": true,
+	"localOverwriteEnabled": true,
+	"monitorDirs":[{
+		"path": "/data/sfsf/workspace/trunk/cdp/au-cdp-web/src/main/webapp/ui/cdp/",
+		"relativeStartIndex": 57,
+		"exts": ["css","js","xhtml"],
+		"recrusive": true,
+		"excluded": [],
+		"replaceRules": [
+			{"source":".js","target":"_dev-snapshot.js"},
+			{"source":".css","target":"_dev-snapshot.css"},
+			{"source":".xhtml","target":".xhtml"}
+		],
+		"targetBaseFolder": "/data/sfsf/workspace/trunk/tomcat-sfs/webapps/ROOT/",
+		"remoteTargetFolder": ""
+	}]
+}
