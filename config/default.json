@@ -3,7 +3,8 @@
 	"remote": {
 		"ip": "",
 		"port": 8888,
-		"rootPath": "/MyProjects/nodejsPrj/nodeJsFileSyncTest/"
+		"rootPath": "/MyProjects/nodejsPrj/nodeJsFileSyncTest/",
+		"dataEndSign": "<!!!!!dataEND!!!!!>"
 	},
 	"remoteOverwriteEnabled": true,
 	"localOverwriteEnabled": true,
@@ -20,5 +21,15 @@
 		],
 		"targetBaseFolder": "/data/sfsf/workspace/trunk/tomcat-sfs/webapps/ROOT/",
 		"remoteTargetFolder": "server/"
-	}]
+	}],
+	"afterUpdateTasks":[
+		{
+			"enabled": true,
+			"pluginPath": "./SyncServer"
+		},
+		{
+			"enabled": true,
+			"pluginPath": "./SyncFile"
+		}
+	]
 }

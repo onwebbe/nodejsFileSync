@@ -3,11 +3,10 @@ var gaze= require('gaze');
 var configGaze = require('gaze');
 var config = require('config');
 
-function MonitorItem(monitorDir, remoteROOT, syncFile, syncServer) {
+function MonitorItem(monitorDir, remoteROOT, afterUpdateTasks) {
 	this.monitorDir = monitorDir;
 	this.remoteROOT = remoteROOT;
-	this.syncFile = syncFile;
-	this.syncServer = syncServer;
+	this.afterUpdateTasks = afterUpdateTasks;
 }
 MonitorItem.prototype.readConfiguration = function(){
 }
@@ -41,45 +40,30 @@ MonitorItem.prototype.startMonitor = function(){
 		  		}
 		  	}*/
 		  	if(!isExcluded){
-		  		if(that.syncServer){
-		  			var remoteFilePath = that.remoteROOT+remoteTargetFolder+that.getRelativeDir(filepath);
-					that.syncServer.sendFileData("change", filepath, remoteFilePath);
-		  		}
-		  		if(that.syncFile){
-		  			var remoteFilePath = targetBaseDir+that.getRelativeDir(filepath);
-					that.syncFile.sendFileData("change", filepath, remoteFilePath);
-		  		}
-		  		
+		  		that.executeAfterUpdateTasks("change", filepath);
 		  	}
 		});
 
 		// On file added
 		this.on('added', function(filepath) {
 		 	console.log("added:"+filepath);
-		 	if(that.syncServer){
-			    var remoteFilePath = that.remoteROOT+remoteTargetFolder+that.getRelativeDir(filepath);
-			    that.syncServer.sendFileData("add", filepath, remoteFilePath);
-			}
-			if(that.syncFile){
-	  			var remoteFilePath = targetBaseDir+that.getRelativeDir(filepath);
-				that.syncFile.sendFileData("add", filepath, remoteFilePath);
-	  		}
+		 	that.executeAfterUpdateTasks("added", filepath);
 	    });
 
 		// On file deleted
 		this.on('deleted', function(filepath) {
 			console.log("deleted:"+filepath);
-			if(that.syncServer){
-			    var remoteFilePath = that.remoteROOT+remoteTargetFolder+that.getRelativeDir(filepath);
-			    that.syncServer.sendFileData("delete", filepath, remoteFilePath);
-			}
-			if(that.syncFile){
-	  			var remoteFilePath = targetBaseDir+that.getRelativeDir(filepath);
-				that.syncFile.sendFileData("delete", filepath, remoteFilePath);
-	  		}
+			that.executeAfterUpdateTasks("deleted", filepath);
 		});
 	 });
 	gazeItem.monitorData = usingDirs;
+}
+MonitorItem.prototype.executeAfterUpdateTasks = function(type, filepath){
+	var tasks = this.afterUpdateTasks;
+	for(var i=0;i<tasks.length;i++){
+		var task = tasks[i];
+		task.sendFileData(type, filepath, {item: this.monitorDir});
+	}
 }
 MonitorItem.prototype.getRelativeDir = function(sourcePath){
 	var rules = this.monitorDir.replaceRules;

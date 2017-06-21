@@ -8,23 +8,31 @@ function SyncClient(){
 }
 SyncClient.prototype.connect = function(ip, port){
 	var that = this;
+	var allData = "";
+	var dataEndSign = config.get("remote.dataEndSign");
 	this.client.connect(port, ip, function(){
 		console.log("Server connected:"+ip+":"+port);
 		that.client.write("data send from Client");
 	});
 	this.client.on("data", function(data){
 		console.log("Get Server data");
-		var jsonData = JSON.parse(data);
-		console.log("Have file "+jsonData.type+". Will write to file:"+jsonData.target);
-		if(jsonData.type != "delete"){
-			var fileContent = jsonData.content;
-			if(fileContent && fileContent.type=="Buffer"){
-				fileContent = new Buffer(fileContent.data);
-			}
-			fs.outputFileSync(jsonData.target, fileContent);
-		}else{
+		allData = allData + data;
+		if(allData.endsWith(dataEndSign)){
+			var usingData = allData.substring(0, allData.length - dataEndSign.length);
+			var jsonData = JSON.parse(usingData);
+			console.log("Have file "+jsonData.type+". Will write to file:"+jsonData.target);
+			if(jsonData.type != "delete"){
+				var fileContent = jsonData.content;
+				if(fileContent && fileContent.type=="Buffer"){
+					fileContent = new Buffer(fileContent.data);
+				}
+				fs.outputFileSync(jsonData.target, fileContent);
+			}else{
 
+			}
+			allData = "";
 		}
+		
 	});
 }
 var ip = config.get("remote.ip");

@@ -1,8 +1,9 @@
 var net = require("net");
 var config = require("config");
 var fs = require('fs-extra');
+var SyncUtils = require("./SyncUtils");
 function SyncServer(configParam){
-	this.serverEnabled = config.get("remoteOverwriteEnabled");
+	this.serverEnabled = configParam.config.enabled;
 	this.port = configParam.port;
 	this.ip = configParam.ip;
 	this.clients = new Array();
@@ -21,10 +22,16 @@ SyncServer.prototype.start = function(){
 		this.server.listen(this.port, this.ip);
 	}
 }
-SyncServer.prototype.sendFileData = function(type, source, target){
+SyncServer.prototype.sendFileData = function(type, source, params){
 	var that = this;
+	var configItem = params.item;
+	if(configItem==null){
+		configItem = {};
+	}
 	if(this.serverEnabled){
+		var target = that.getTargetPath(configItem, source);
 		var fileContent = fs.readFileSync(source);
+		var dataEndSign = config.get("remote.dataEndSign");
 		var sendData = {
 			"type": type,
 			"source": source,
@@ -32,6 +39,7 @@ SyncServer.prototype.sendFileData = function(type, source, target){
 			"content": fileContent
 		}
 		sendData = JSON.stringify(sendData);
+		sendData = sendData + dataEndSign;
 		var sendChange = function(){
 			that.sendDataToAllClient(sendData);
 		}
@@ -54,6 +62,13 @@ SyncServer.prototype.sendFileData = function(type, source, target){
 		}
 	}
 }
+SyncServer.prototype.getTargetPath = function(configItem, sourcePath){
+	var relTarget = SyncUtils.getRelationPath(configItem, sourcePath);
+	var remoteRoot = config.get("remote.rootPath");
+	var remoteTargetFolder = configItem.remoteTargetFolder;
+	var remoteFilePath = remoteRoot+remoteTargetFolder+relTarget;
+	return remoteFilePath;
+};
 SyncServer.prototype.sendDataToAllClient = function(data){
 	if(this.serverEnabled){
 		var clients = this.clients;
